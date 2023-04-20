@@ -4,6 +4,7 @@ Status do Projeto: ⚠️ Espera
 
 
 Tópicos
+
 🔹 Descrição do projeto
 
 🔹 Funcionalidades
@@ -38,6 +39,7 @@ Descrição do projeto
 Descrição breve do projeto compondo um paragrafo ou dois.
 
 Funcionalidades ⚙️
+
 ✔️ Flappy bird basic mechanics.
 
 ✔️ Tap to jump.
@@ -45,17 +47,21 @@ Funcionalidades ⚙️
 ✔️ Score
 
 Distribuição
+
 https://github.com/AlanBrandi/FlappyBird.
 
-Pré-requisitos ⚠️
+Pré-requisitos
+
 - Android Oreo 8.0;
 - LibGDX;
 - Android Studio.
 
 Desenvolvedores/Contribuintes:
+
 AlanBrandi
 
 Licença
+
 The MIT License (MIT)
 
 Copyright ©️ 2023 - FlappyBird
