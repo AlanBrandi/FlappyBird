@@ -1,6 +1,8 @@
 # Flappy Bird
 Versão: 1.0
-Status do Projeto: ⚠️ Espera 
+Status do Projeto: ⚠️ Espera
+
+
 Tópicos
 🔹 Descrição do projeto
 
