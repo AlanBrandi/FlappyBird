@@ -1,5 +1,5 @@
 package com.mygdx.flappybird;
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
@@ -13,14 +13,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import java.util.Random;
 // Custom game.
-public class FlappyBird extends ApplicationAdapter {
+public class FlappyBird extends Game {
 	//Variáveis do jogo.
 	SpriteBatch batch;
+
+	private SplashScreen splashScreen;
 	//Animações bird.
 	Texture[] birdArray;
 	//Background.
@@ -31,6 +33,8 @@ public class FlappyBird extends ApplicationAdapter {
 	Texture gameOverPanelTexture;
 
 	Texture startLogo;
+
+	Texture splashLogo;
 	Texture startText;
 
 	Texture[] coin;
@@ -81,17 +85,26 @@ public class FlappyBird extends ApplicationAdapter {
 	final float VIRTUAL_WIDTH = 720;
 	final float VIRTUAL_HEIGHT = 1280;
 
-    //Inicia texturas e objetos da cena.
+	public FlappyBird() {
+
+	}
+
+	//Inicia texturas e objetos da cena.
 	@Override
 	public void create () {
+
 		startTextures();
 		startObjects();
+		splashScreen = new SplashScreen();
+		setScreen(splashScreen);
 		randomNum = Math.random();
+
 		if (randomNum < 0.2) { // 20% de chance para o índice 0
 			coinIndex = 0;}
 		else {
 			coinIndex = 1;
 		}
+
 	}
     //Verifica estado do jogo, pontos e crias as texturas + colliders.
 	@Override
@@ -118,6 +131,7 @@ public class FlappyBird extends ApplicationAdapter {
 		coin = new Texture[2];
 		coin[0] = new Texture("Coin.png");
 		coin[1] = new Texture("Coin2.png");
+		splashLogo = new Texture("Splash_Screen.png");
 	}
     //Instancia os canos, nas devidas posições + espaço entre eles + player
 	// + sounds fundo etc.
@@ -201,6 +215,7 @@ public class FlappyBird extends ApplicationAdapter {
 				preferences.putInteger("maxScore", maxScore);
 				preferences.flush();
 			}
+
 			positionBirdHorizontal -= Gdx.graphics.getDeltaTime()*500;;
           //Se ele apertar na tela reinicia o jogo mudando o state os points e a gravidade.
 			if(touchScreen){
@@ -268,6 +283,7 @@ public class FlappyBird extends ApplicationAdapter {
 	}
 //Adiciona as texturas na tela do jogo.
 	private void drawTextures(){
+
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		batch.draw(backgroundTexture,0,0,deviceWidth, deviceHeight);
@@ -299,7 +315,14 @@ public class FlappyBird extends ApplicationAdapter {
 					900);
 			batch.draw(startText, deviceWidth/2 - startText.getWidth()/2,
 					deviceHeight/8);
+			batch.draw(splashLogo, deviceWidth/2 - deviceWidth/2,
+					deviceHeight);
 		}
+	/*	if(gameState == 3){
+			batch.draw(coin[1], deviceWidth/2 - deviceWidth/2,
+					deviceHeight);
+		}
+		*/
 		batch.end();
 	}
 //Confere se o player passou os canos se sim toca um som e adiciona os mesmos.
@@ -325,5 +348,7 @@ public class FlappyBird extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
+		super.dispose();
+		splashScreen.dispose();
 	}
 }

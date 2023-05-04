@@ -1,10 +1,12 @@
 package com.mygdx.flappybird;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.mygdx.flappybird.FlappyBird;
+import com.mygdx.flappybird.SplashScreen;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override
