@@ -14,16 +14,9 @@ public class SplashScreen implements Screen, ApplicationListener {
     private Game game;
     private SpriteBatch spriteBatch;
     private Texture splashImage;
+
     private float timeElapsed = 0f;
     private static final float SPLASH_SCREEN_TIME = 3f; // tempo em segundos
-
-    public SplashScreen(Game game) {
-        this.game = game;
-    }
-
-    public SplashScreen() {
-
-    }
 
     @Override
     public void show() {
@@ -38,13 +31,13 @@ public class SplashScreen implements Screen, ApplicationListener {
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         spriteBatch.begin();
-        spriteBatch.draw(splashImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        spriteBatch.draw(splashImage, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.end();
 
         timeElapsed += Gdx.graphics.getDeltaTime();
         if (timeElapsed > SPLASH_SCREEN_TIME) {
             dispose();
-            game.setScreen(new FlappyBird().getScreen());
+
         }
 
     }
@@ -78,6 +71,12 @@ public class SplashScreen implements Screen, ApplicationListener {
 
     @Override
     public void create() {
-        // deixe vazio
+        spriteBatch.begin();
+        spriteBatch.draw(splashImage,
+                Gdx.graphics.getWidth()/2,
+                Gdx.graphics.getHeight()/2,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight());
+        spriteBatch.end();
     }
 }

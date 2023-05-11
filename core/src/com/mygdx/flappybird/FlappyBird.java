@@ -15,8 +15,8 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import java.util.Random;
+
 // Custom game.
 public class FlappyBird extends Game {
 	//Variáveis do jogo.
@@ -45,6 +45,9 @@ public class FlappyBird extends Game {
 	Circle birdCircleCollider;
 	Circle coinCircleCollider;
 	Rectangle rectanglePipeTopCollider;
+
+	Rectangle downCollider;
+	Rectangle topCollider;
 	Rectangle rectanglePipeDownCollider;
 
 	float deviceWidth;
@@ -54,6 +57,12 @@ public class FlappyBird extends Game {
 	float birdInitialVerticalPosition;
 	float positionPipeHorizontal;
 
+	float topDeathHorizontal;
+	float downDeathHorizontal;
+
+	float topDeathVertical;
+	float downDeathVertical;
+
 	float positionCoinHorizontal;
 	float positionPipeVertical;
 
@@ -61,9 +70,10 @@ public class FlappyBird extends Game {
 	float spaceBetweenPipes;
 	Random random;
 	int points = 0;
+	int lastPoint = 20;
 	int maxScore = 0;
 	boolean pipePassed = false;
-	int gameState = 0;
+	public int gameState = 0;
 	float positionBirdHorizontal;
 	BitmapFont scoreText;
 	BitmapFont restartText;
@@ -85,6 +95,7 @@ public class FlappyBird extends Game {
 	final float VIRTUAL_WIDTH = 720;
 	final float VIRTUAL_HEIGHT = 1280;
 
+	boolean hard;
 	public FlappyBird() {
 
 	}
@@ -95,10 +106,7 @@ public class FlappyBird extends Game {
 
 		startTextures();
 		startObjects();
-		splashScreen = new SplashScreen();
-		setScreen(splashScreen);
 		randomNum = Math.random();
-
 		if (randomNum < 0.2) { // 20% de chance para o índice 0
 			coinIndex = 0;}
 		else {
@@ -110,11 +118,17 @@ public class FlappyBird extends Game {
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
+  		if(gameState == 4){
+			verifyGameState();
+			drawTextures();
+		}
 		verifyGameState();
 		validatePoints();
 		drawTextures();
 		detectCollisions();
+	}
+	public void ChangeGameState(int state){
+		gameState = state;
 	}
     //Método para iniciar as texturas (sprites do player, fundo canos e tela de gameover).
 	private void startTextures(){
@@ -145,7 +159,10 @@ public class FlappyBird extends Game {
 		positionCoinVertical = deviceHeight/2;
 		positionCoinHorizontal = deviceWidth;
 		positionPipeHorizontal = deviceWidth;
+		topDeathVertical = deviceHeight;
+		topDeathHorizontal = deviceWidth/2;
 		spaceBetweenPipes = 350;
+		downDeathVertical = deviceHeight;
 
 		scoreText = new BitmapFont();
 		scoreText.setColor(Color.WHITE);
@@ -164,6 +181,8 @@ public class FlappyBird extends Game {
 		coinCircleCollider = new Circle();
 		rectanglePipeDownCollider = new Rectangle();
 		rectanglePipeTopCollider = new Rectangle();
+		topCollider = new Rectangle();
+		downCollider = new Rectangle();
 
 		flyingSound = Gdx.audio.newSound(Gdx.files.internal("som_asa.wav"));
 		collisionSound = Gdx.audio.newSound(Gdx.files.internal("som_batida.wav"));
@@ -225,8 +244,13 @@ public class FlappyBird extends Game {
 				positionBirdHorizontal = 0;
 				birdInitialVerticalPosition = deviceHeight/2;
 				positionPipeHorizontal = deviceWidth;
+				spaceBetweenPipes = 350;
 			}
 		}
+		/*else if(gameState == 4){
+				if(touchScreen){
+					gameState = 1;
+				}*/
 	}
 //Detecção de colliders.
 	private void detectCollisions(){
@@ -249,10 +273,17 @@ public class FlappyBird extends Game {
 				positionPipeHorizontal, deviceHeight / 2 + spaceBetweenPipes / 2 + positionPipeVertical,
 				pipeTopTexture.getWidth(), pipeTopTexture.getHeight()
 		);
+		topCollider.set(
+				topDeathHorizontal - 300, topDeathVertical + 100, deviceWidth, 300);
+		downCollider.set(
+				topDeathHorizontal - 300, downDeathVertical - (downDeathVertical - 1), deviceWidth, 1);
+
 		randomNum = Math.random();
 		boolean collidedPipeTop = Intersector.overlaps(birdCircleCollider, rectanglePipeTopCollider);
 		boolean collidedPipeDown = Intersector.overlaps(birdCircleCollider, rectanglePipeDownCollider);
 		boolean collidedCoin = Intersector.overlaps(birdCircleCollider, coinCircleCollider);
+		boolean collidedDeath = Intersector.overlaps(birdCircleCollider, topCollider);
+		boolean collidedDeath2 = Intersector.overlaps(birdCircleCollider, downCollider);
         if(collidedCoin){
 			if(coinCurrent == coin[0]){
 				points = points + 10;
@@ -280,25 +311,36 @@ public class FlappyBird extends Game {
 				gameState = 2;
 			}
 		}
+		else if(collidedDeath){
+			if(gameState == 1){
+				gameState = 2;
+			}
+		}
+		else if(collidedDeath2){
+			if(gameState == 1){
+				gameState = 2;
+			}
+		}
 	}
 //Adiciona as texturas na tela do jogo.
 	private void drawTextures(){
 
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		batch.draw(backgroundTexture,0,0,deviceWidth, deviceHeight);
-		batch.draw(birdArray[(int) variation],
-				50 + positionBirdHorizontal, birdInitialVerticalPosition);
-		batch.draw(pipeDownTexture, positionPipeHorizontal,
-				deviceHeight/2 - pipeDownTexture.getHeight() - spaceBetweenPipes/2 + positionPipeVertical);
-		batch.draw(pipeTopTexture, positionPipeHorizontal,
-				deviceHeight/2 + spaceBetweenPipes/2 + positionPipeVertical);
-		scoreText.draw(batch, String.valueOf(points), deviceWidth/2.2f,
-				deviceHeight - 110);
+			batch.setProjectionMatrix(camera.combined);
+			batch.begin();
+			batch.draw(backgroundTexture,0,0,deviceWidth, deviceHeight);
+			batch.draw(birdArray[(int) variation],
+					50 + positionBirdHorizontal, birdInitialVerticalPosition);
+			batch.draw(pipeDownTexture, positionPipeHorizontal,
+					deviceHeight/2 - pipeDownTexture.getHeight() - spaceBetweenPipes/2 + positionPipeVertical);
+			batch.draw(pipeTopTexture, positionPipeHorizontal,
+					deviceHeight/2 + spaceBetweenPipes/2 + positionPipeVertical);
+			scoreText.draw(batch, String.valueOf(points), deviceWidth/2.2f,
+					deviceHeight - 110);
 
-		batch.draw(coin[coinIndex],
-				50 + positionCoinHorizontal, positionCoinVertical);
-				coinCurrent = coin[coinIndex];
+			batch.draw(coin[coinIndex],
+					50 + positionCoinHorizontal, positionCoinVertical);
+			coinCurrent = coin[coinIndex];
+
 		if(gameState == 2){
 			batch.draw(gameOverPanelTexture, deviceWidth/2 - gameOverPanelTexture.getWidth()/2,
 					deviceHeight/2);
@@ -318,11 +360,10 @@ public class FlappyBird extends Game {
 			batch.draw(splashLogo, deviceWidth/2 - deviceWidth/2,
 					deviceHeight);
 		}
-	/*	if(gameState == 3){
-			batch.draw(coin[1], deviceWidth/2 - deviceWidth/2,
-					deviceHeight);
+		if(gameState == 4){
+			batch.draw(coin[1], deviceWidth/2, deviceHeight/2);
 		}
-		*/
+
 		batch.end();
 	}
 //Confere se o player passou os canos se sim toca um som e adiciona os mesmos.
@@ -332,6 +373,15 @@ public class FlappyBird extends Game {
 				points++;
 				pipePassed = true;
 				scoreSound.play();
+				if(points > lastPoint && hard == false){
+					if(spaceBetweenPipes <= 150){
+					hard = true;
+					}
+					else{
+						spaceBetweenPipes -= 50;
+					}
+					lastPoint = points + 20;
+				}
 			}
 		}
 
