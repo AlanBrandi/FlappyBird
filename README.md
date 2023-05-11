@@ -46,6 +46,14 @@ Funcionalidades ⚙️
 
 ✔️ Score
 
+✔️ Dificuldade aumentando conforme joga.
+
+✔️ Morrer se tocar no chão e teto.
+
+✔️ Sistema de moedas com pontuação adicionais.
+
+✔️ Musicas customizadas.
+
 Distribuição
 
 https://github.com/AlanBrandi/FlappyBird.
