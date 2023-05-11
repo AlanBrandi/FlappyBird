@@ -23,9 +23,7 @@ public class FlappyBird extends Game {
 	SpriteBatch batch;
 
 	private SplashScreen splashScreen;
-	//Animações bird.
 	Texture[] birdArray;
-	//Background.
 	Texture backgroundTexture;
 	Texture pipeDownTexture;
 
@@ -106,6 +104,7 @@ public class FlappyBird extends Game {
 
 		startTextures();
 		startObjects();
+		//Random int para qual moeda dar spawn, seja dourada, ou prata.
 		randomNum = Math.random();
 		if (randomNum < 0.2) { // 20% de chance para o índice 0
 			coinIndex = 0;}
@@ -147,7 +146,7 @@ public class FlappyBird extends Game {
 		coin[1] = new Texture("Coin2.png");
 		splashLogo = new Texture("Splash_Screen.png");
 	}
-    //Instancia os canos, nas devidas posições + espaço entre eles + player
+    //Instancia os canos, nas devidas posições + espaço entre eles + player etc.
 	// + sounds fundo etc.
 	private void startObjects(){
 		batch = new SpriteBatch();
@@ -273,6 +272,7 @@ public class FlappyBird extends Game {
 				positionPipeHorizontal, deviceHeight / 2 + spaceBetweenPipes / 2 + positionPipeVertical,
 				pipeTopTexture.getWidth(), pipeTopTexture.getHeight()
 		);
+		//Collider para as colisões do chão e do teto.
 		topCollider.set(
 				topDeathHorizontal - 300, topDeathVertical + 100, deviceWidth, 300);
 		downCollider.set(
@@ -281,6 +281,7 @@ public class FlappyBird extends Game {
 		randomNum = Math.random();
 		boolean collidedPipeTop = Intersector.overlaps(birdCircleCollider, rectanglePipeTopCollider);
 		boolean collidedPipeDown = Intersector.overlaps(birdCircleCollider, rectanglePipeDownCollider);
+		//Collider moeda.
 		boolean collidedCoin = Intersector.overlaps(birdCircleCollider, coinCircleCollider);
 		boolean collidedDeath = Intersector.overlaps(birdCircleCollider, topCollider);
 		boolean collidedDeath2 = Intersector.overlaps(birdCircleCollider, downCollider);
@@ -288,6 +289,7 @@ public class FlappyBird extends Game {
 			if(coinCurrent == coin[0]){
 				points = points + 10;
 				coinSound.play();
+				//Caso pegue a moeda gera uma nova moeda com 20% de chance para a dourada.
 				if (randomNum < 0.2) { // 20% de chance para o índice 0
 					coinIndex = 0;}
 				else {
@@ -311,6 +313,7 @@ public class FlappyBird extends Game {
 				gameState = 2;
 			}
 		}
+		//Se bateu no céu ou no chão, ele coloca como o gameState 2.
 		else if(collidedDeath){
 			if(gameState == 1){
 				gameState = 2;
@@ -351,7 +354,7 @@ public class FlappyBird extends Game {
 					"Seu recorde é: "+ maxScore + " pontos",
 					deviceWidth/2-140, deviceHeight/2 - gameOverPanelTexture.getHeight());
 		}
-
+		//Caso gameState 0, adiciona tituto e legenda para o que alterar.
 		if(gameState == 0) {
 			batch.draw(startLogo, deviceWidth/2 - startLogo.getWidth()/2,
 					900);
